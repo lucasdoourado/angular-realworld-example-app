@@ -1,6 +1,7 @@
 describe('signup and login', () => {
   let randomString = Math.random().toString(36).substring(2);
   it('signup', () => {
+    cy.intercept('POST', '**/*.realworld.io/api/users').as('newUser');
     cy.visit('http://localhost:4200/');
     cy.get('.nav').contains('Sign up').click();
     cy.url().should('include', '/register');
