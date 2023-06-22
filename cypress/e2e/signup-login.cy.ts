@@ -21,7 +21,21 @@ describe('signup and login', () => {
     });
   });
   it('login', () => {
+    cy.intercept('GET', '**/tags', {fixture: 'popularTags.json'}).as('tags');
     cy.visit('http://localhost:4200/');
+    cy.wait('@tags');
+    cy.get('.nav').contains('Sign in').click();
+    cy.get('input[formcontrolname="email"]').type(email);
+    cy.get('input[formcontrolname="password"]').type(password);
+    cy.get('button').contains("Sign in").click();
+    cy.get(':nth-child(4) > .nav-link').should('contain', username);
+    cy.wait('@tags');
+    cy.get('.tag-list').should('contain', 'blaze.com').and('contain', 'jogo do bicho');
+  });
+  it('mock global feed data', function (){
+    cy.intercept('GET', '**/api/articles*', {fixture: 'articles.json'}).as('articles');
+    cy.visit('http://localhost:4200/');
+    cy.wait('@articles');
     cy.get('.nav').contains('Sign in').click();
     cy.get('input[formcontrolname="email"]').type(email);
     cy.get('input[formcontrolname="password"]').type(password);
